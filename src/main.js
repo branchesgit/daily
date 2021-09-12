@@ -7,6 +7,7 @@ document.write('<script src="http://'
 import MyPromise from "./promise"
 
 function onload() {
+    console.log('onload...')
     const promise = new MyPromise((resolve, reject) => {
        const p = fetch("./json/a.json").then(res => res.json());
        p.then(data => {
