@@ -1,7 +1,12 @@
+document.write('<script src="http://' 
+                 + (location.host || 'localhost').split(':')[0] +
+                 ':5729/livereload.js?snipver=1"></' + 'script>');
+
+
+
 import MyPromise from "./promise"
 
-function handleClick() {
-    console.log("click button")
+function onload() {
     const promise = new MyPromise((resolve, reject) => {
        const p = fetch("./json/a.json").then(res => res.json());
        p.then(data => {
@@ -23,4 +28,4 @@ function handleClick() {
     });
 }
 
-window.handleClick = handleClick
+window.addEventListener('load', onload, false);
