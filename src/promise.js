@@ -1,4 +1,4 @@
-export default function MyPromise(callback) {
+export default function EasyPromise(callback) {
     this.resolveObj = createCallbacks();
     this.rejectObj = createCallbacks();
     this.value;
@@ -17,13 +17,13 @@ export default function MyPromise(callback) {
     callback && callback(this.innerResolve, this.innerReject)
 }
 
-MyPromise.prototype.then = function (onResolved, onRejected) {
+EasyPromise.prototype.then = function (onResolved, onRejected) {
     if (this.isPending()) {
-        return new MyPromise(resolve => {
+        return new EasyPromise((resolve, reject) => {
             // waiting for promise.resolve.
             this.resolveObj.add(() => {
                 const res = onResolved(this.value)
-                if (res instanceof MyPromise) {
+                if (res instanceof EasyPromise) {
                     res.then(resolve)
                 } else {
                     resolve(res)
@@ -32,37 +32,39 @@ MyPromise.prototype.then = function (onResolved, onRejected) {
         });
     } else if (this.isResolved()) {
         onResolved(this.value);
+        return this;
     } else if (thi.isRejected()) {
         onRejected(this.reason)
+        return this;
     }
 }
 
-MyPromise.prototype.resolve = function (value) {
+EasyPromise.prototype.resolve = function (value) {
     this.resolved();
     this.innerResolved(value);
 }
 
-MyPromise.prototype.reject = function () {
+EasyPromise.prototype.reject = function () {
 
 }
 
-MyPromise.prototype.isPending = function () {
+EasyPromise.prototype.isPending = function () {
     return this.status === "pending"
 }
 
-MyPromise.prototype.isResolved = function () {
+EasyPromise.prototype.isResolved = function () {
     return this.status === "resolved"
 }
 
-MyPromise.prototype.isRejected = function () {
+EasyPromise.prototype.isRejected = function () {
     return this.status === "rejected"
 }
 
-MyPromise.prototype.rejected = function () {
+EasyPromise.prototype.rejected = function () {
     this.status = "rejected"
 }
 
-MyPromise.prototype.resolved = function () {
+EasyPromise.prototype.resolved = function () {
     this.status = "resolved"
 }
 
