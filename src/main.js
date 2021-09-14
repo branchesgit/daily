@@ -5,9 +5,8 @@ document.write('<script src="http://'
 
 
 import MyPromise from "./promise"
-
+import { addEvent, removeEvent } from "./event";
 function onload() {
-    console.log('onload...')
     const promise = new MyPromise((resolve, reject) => {
        const p = fetch("./json/a.json").then(res => res.json());
        p.then(data => {
@@ -30,3 +29,16 @@ function onload() {
 }
 
 window.addEventListener('load', onload, false);
+
+(function() {
+    const button = document.body.querySelector("button");
+    function onButtonClick() {
+        console.log('on button click')
+        removeEvent(button, 'click', onButtonClick)
+    }
+    addEvent(button, 'click', onButtonClick)
+
+    window.handleClick = () => {
+        console.log('self click')
+    }
+})();

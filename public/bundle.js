@@ -119,8 +119,48 @@ document.write('<script src="http://' + (location.host || 'localhost').split(':'
         };
     }
 
-    document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':5729/livereload.js?snipver=1"></' + 'script>');
+    var guid = 1;
 
+    function addEvent(element, type, handler) {
+        if (!element.events) {
+            element.events = {};
+        }
+
+        if (!handler.guid) {
+            handler.guid = guid++;
+        }
+
+        var handlers = element.events[type] || (element.events[type] = {});
+        if (element["on" + type]) {
+            handlers["0"] = element["on" + type];
+        }
+
+        handlers[handler.guid] = handler;
+
+        element["on" + type] = handleEvent;
+    }
+
+    function removeEvent(element, type, handler) {
+        var handlers = element && element.events && element.events[type];
+        if (handlers) {
+            var _guid = handler.guid;
+            if (_guid in handlers) {
+                delete handlers[_guid];
+            }
+        }
+    }
+
+    function handleEvent(event) {
+        event = event || window.event;
+        var handlers = this.events[event.type];
+
+        for (var i in handlers) {
+            this.handleEvent = handlers[i];
+            this.handleEvent(event);
+        }
+    }
+
+    document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':5729/livereload.js?snipver=1"></' + 'script>');
     function onload() {
         var promise = new EasyPromise(function (resolve, reject) {
             var p = fetch("./json/a.json").then(function (res) {
@@ -148,6 +188,19 @@ document.write('<script src="http://' + (location.host || 'localhost').split(':'
     }
 
     window.addEventListener('load', onload, false);
+
+    (function () {
+        var button = document.body.querySelector("button");
+        function onButtonClick() {
+            console.log('on button click');
+            removeEvent(button, 'click', onButtonClick);
+        }
+        addEvent(button, 'click', onButtonClick);
+
+        window.handleClick = function () {
+            console.log('self click');
+        };
+    })();
 
 }());
 //# sourceMappingURL=bundle.js.map
